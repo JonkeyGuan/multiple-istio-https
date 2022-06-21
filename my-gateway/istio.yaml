@@ -1,0 +1,49 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name:  my-https
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE  
+        credentialName: "https-credential"
+      hosts:
+        - "my-vue-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+        - "my-hello-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+        - "my-ext-hello-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: my-ext-hello-entry
+spec:
+  hosts:
+  - "my-ext-hello.my-ext-hello.svc.cluster.local"
+  location: MESH_EXTERNAL
+  ports:
+  - number: 8080
+    name: http
+    protocol: HTTP
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-ext-hello
+spec:
+  hosts:
+    - "my-ext-hello-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+  gateways:
+    -  my-gateway/my-https
+  http:
+    - route:
+        - destination:
+            host: "my-ext-hello.my-ext-hello.svc.cluster.local"
+            port:
+              number: 8080

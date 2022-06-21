@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-hello
+spec:
+  hosts:
+    - "my-hello-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+  gateways:
+    -  my-gateway/my-https
+  http:
+    - route:
+        - destination:
+            host: my-hello
+            port:
+              number: 8080

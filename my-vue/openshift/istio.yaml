@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: my-vue
+spec:
+  hosts:
+    - "my-vue-istio-system.apps.rosa-5mtns.4wdf.p1.openshiftapps.com"
+  gateways:
+    -  my-gateway/my-https
+  http:
+    - route:
+        - destination:
+            host: my-vue
+            port:
+              number: 8080
